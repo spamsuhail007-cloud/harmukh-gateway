@@ -3177,7 +3177,7 @@
               <span>❓</span> Help & Support
             </button>
             <button type="button" class="ypg-popover-item" onclick="handleCustomerLogout()"
-              style="color:var(--ypg-danger);">
+              style="display:none !important;">
               <span>🚪</span> Sign Out / Change Number
             </button>
           </div>
@@ -3251,7 +3251,7 @@
             <span>❓</span> Help & Support
           </button>
           <button type="button" class="ypg-popover-item" onclick="handleCustomerLogout()"
-            style="color:var(--ypg-danger);">
+            style="display:none !important;">
             <span>🚪</span> Sign Out / Change Number
           </button>
         </div>
@@ -3261,7 +3261,7 @@
       <main class="ypg-body">
 
         <!-- PRE-GATEWAY CUSTOMER AUTHENTICATION VIEW (WHATSAPP BERRY PROTOCOL OTP FLOW) -->
-        <div id="preGatewayAuthView" hidden>
+        <div id="preGatewayAuthView" hidden style="display:none !important;">
           <h2 class="ypg-page-title" id="authViewMainTitle">Sign in to Pay</h2>
           <div class="ypg-auth-box">
             <div class="ypg-auth-sub-desc" id="authViewSubTitle">Enter your 10-digit WhatsApp mobile number to continue
@@ -3372,7 +3372,7 @@
         </div>
 
         <!-- MAIN PAYMENT GATEWAY INTERFACE -->
-        <div id="paymentGatewayInterface" hidden>
+        <div id="paymentGatewayInterface">
 
           <!-- DYNAMIC PAYMENT METHOD SELECTOR BAR (ONLINE / OFFLINE MODALITY TABS) -->
           <div id="paymentMethodSelectorBar" class="ypg-method-selector-bar" style="display:{{METHOD_SELECTOR_DISPLAY}};">
@@ -4476,36 +4476,19 @@
       const footerEl = document.getElementById('ypgStickyFooter');
       const pcTopbarTitle = document.querySelector('.ypg-pc-topbar-title');
 
-      if (isAuthView) {
-        if (authEl) {
-          authEl.hidden = false;
-          authEl.style.removeProperty('display');
-        }
-        if (payEl) {
-          payEl.hidden = true;
-          payEl.style.setProperty('display', 'none', 'important');
-        }
-        if (footerEl) {
-          footerEl.style.display = 'none';
-        }
-        if (pcTopbarTitle) {
-          pcTopbarTitle.textContent = 'Sign in to Pay';
-        }
-      } else {
-        if (authEl) {
-          authEl.hidden = true;
-          authEl.style.setProperty('display', 'none', 'important');
-        }
-        if (payEl) {
-          payEl.hidden = false;
-          payEl.style.removeProperty('display');
-        }
-        if (footerEl) {
-          footerEl.style.display = '';
-        }
-        if (pcTopbarTitle) {
-          pcTopbarTitle.textContent = 'Payment Options';
-        }
+      if (authEl) {
+        authEl.hidden = true;
+        authEl.style.setProperty('display', 'none', 'important');
+      }
+      if (payEl) {
+        payEl.hidden = false;
+        payEl.style.removeProperty('display');
+      }
+      if (footerEl) {
+        footerEl.style.display = '';
+      }
+      if (pcTopbarTitle) {
+        pcTopbarTitle.textContent = 'Payment Options';
       }
     }
 
@@ -5005,9 +4988,7 @@
       activeToken = null;
       hasAttemptedAutoLogin = false;
       updateCustomerDisplay(null);
-      setGatewayAuthMode(true);
-      goToAuthStep('mobile');
-      renderSavedAccountsUI();
+      setGatewayAuthMode(false);
     }
 
     function escapeHtml(str) {
@@ -6041,9 +6022,7 @@
               clearPreservedIdentity();
               activeCustomer = null;
               activeToken = null;
-              setGatewayAuthMode(true);
-              goToAuthStep('mobile');
-              renderSavedAccountsUI();
+              setGatewayAuthMode(false);
             }
           } catch (e) {
           } finally {
@@ -6141,10 +6120,12 @@
 
           const btnContinue = document.getElementById('btnContinuePayment');
 
-          const remainingSec = (data.timeRemainingSeconds !== undefined && data.timeRemainingSeconds !== null) ? Number(data.timeRemainingSeconds) : 300;
+          const remainingSec = (data.timeRemainingSeconds !== undefined && data.timeRemainingSeconds !== null && Number(data.timeRemainingSeconds) > 0)
+            ? Number(data.timeRemainingSeconds)
+            : 300;
           const targetExpiry = data.expiresAt || new Date(Date.now() + remainingSec * 1000).toISOString();
 
-          if (remainingSec <= 0 && data.status === 'ACTIVE') {
+          if (data.expiresAt && new Date(data.expiresAt).getTime() <= Date.now() && data.status === 'ACTIVE') {
             const tText = document.getElementById('activeTimerText');
             if (tText) tText.textContent = 'Expired';
             if (btnContinue) btnContinue.style.display = 'none';

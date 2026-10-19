@@ -186,7 +186,17 @@ export function registerPaymentRoutes(server, ctx) {
     let customerId = body.customerId || null;
     if (!customerId && (body.customer?.mobileNumber || body.customer?.phoneNumber || body.customer?.email) && ctx.customerRepo) {
       const ident = body.customer.email || body.customer.mobileNumber || body.customer.phoneNumber;
-      const existingCust = ctx.customerRepo.findByIdentifier(ident);
+      let existingCust = ctx.customerRepo.findByIdentifier(ident);
+      if (!existingCust && (body.customer.mobileNumber || body.customer.phoneNumber)) {
+        try {
+          existingCust = ctx.customerRepo.create({
+            merchantId: merchant.id,
+            name: body.customer.name || body.customer.fullName || 'Customer',
+            email: body.customer.email || null,
+            mobileNumber: body.customer.mobileNumber || body.customer.phoneNumber
+          });
+        } catch {}
+      }
       if (existingCust) {
         customerId = existingCust.id;
       }
@@ -225,11 +235,10 @@ export function registerPaymentRoutes(server, ctx) {
       }
     }
 
-    // Invariant: Do NOT start payment session timer until customer is authenticated/logged in!
-    // Customer sign in or sign up in the checkout portal is mandatory before slot activation or timer start.
-    // Online storefront checkout: Activate session immediately so customer receives direct QR & 5-minute timer
-    const shouldActivateNow = true;
-    const initialStatus = PaymentStatus.ACTIVE;
+    // Online storefront checkout: Activate session immediately when autoActivate: true
+    const isExplicitAutoActivate = body.autoActivate === true || body.autoActivate === 'true';
+    const shouldActivateNow = isCounterPayment || isExplicitAutoActivate;
+    const initialStatus = isCounterPayment ? PaymentStatus.ACTIVE : PaymentStatus.INITIATED;
 
     const sessionMetadata = {
       ...(body.metadata || {}),

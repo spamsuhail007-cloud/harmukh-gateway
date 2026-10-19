@@ -114,6 +114,15 @@ export class PaymentSessionRepository {
 
       // CRITICAL GUARD: If activeRow is THIS session itself, it's ALREADY ACTIVE! Do not demote to QUEUED!
       if (activeRow && activeRow.id === sessionId) {
+        if (!activeRow.expires_at) {
+          const expiresAtIso = new Date(now.getTime() + durationMs).toISOString();
+          this.db.execute(`
+            UPDATE payment_sessions
+            SET expires_at = ?, slot_acquired_at = COALESCE(slot_acquired_at, ?), updated_at = ?
+            WHERE id = ?
+          `, [expiresAtIso, nowIso, nowIso, sessionId]);
+          activeRow.expires_at = expiresAtIso;
+        }
         return {
           status: PaymentStatus.ACTIVE,
           queuePosition: 0,

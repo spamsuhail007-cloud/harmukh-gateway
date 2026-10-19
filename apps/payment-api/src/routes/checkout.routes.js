@@ -415,8 +415,12 @@ export function registerCheckoutRoutes(server, ctx) {
     const upiMode = isMerchantEnabled ? 'MERCHANT' : 'NON_MERCHANT';
 
     let timeRemainingSeconds = 0;
-    if (session.status === PaymentStatus.ACTIVE && session.expiresAt) {
-      timeRemainingSeconds = Math.max(0, Math.ceil((session.expiresAt.getTime() - now) / 1000));
+    if (session.status === PaymentStatus.ACTIVE) {
+      if (session.expiresAt) {
+        timeRemainingSeconds = Math.max(0, Math.ceil((session.expiresAt.getTime() - now) / 1000));
+      } else {
+        timeRemainingSeconds = 300;
+      }
     } else if (session.status === PaymentStatus.PROCESSING && session.processingExpiresAt) {
       timeRemainingSeconds = Math.max(0, Math.ceil((session.processingExpiresAt.getTime() - now) / 1000));
     } else if (session.status === PaymentStatus.QUEUED) {
@@ -561,6 +565,8 @@ export function registerCheckoutRoutes(server, ctx) {
       }
       if (session.expiresAt) {
         timeRemainingSeconds = Math.max(0, Math.ceil((session.expiresAt.getTime() - now) / 1000));
+      } else {
+        timeRemainingSeconds = 300;
       }
     }
 
