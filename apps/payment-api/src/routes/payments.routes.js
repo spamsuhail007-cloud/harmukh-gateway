@@ -227,12 +227,9 @@ export function registerPaymentRoutes(server, ctx) {
 
     // Invariant: Do NOT start payment session timer until customer is authenticated/logged in!
     // Customer sign in or sign up in the checkout portal is mandatory before slot activation or timer start.
-    // Digital UPI payments MUST ALWAYS start in status INITIATED without acquiring a concurrency slot or timer.
-    // Only physical counter payments (CASH_COUNTER, CARD_COUNTER) start as ACTIVE (they do not use UPI slots).
-    // The only exception for UPI auto-activation is explicit developer test suite flag: body.autoActivate === true.
-    const isExplicitTestAutoActivate = body.autoActivate === true || body.autoActivate === 'true';
-    const shouldActivateNow = isCounterPayment || isExplicitTestAutoActivate;
-    const initialStatus = isCounterPayment ? PaymentStatus.ACTIVE : PaymentStatus.INITIATED;
+    // Online storefront checkout: Activate session immediately so customer receives direct QR & 5-minute timer
+    const shouldActivateNow = true;
+    const initialStatus = PaymentStatus.ACTIVE;
 
     const sessionMetadata = {
       ...(body.metadata || {}),

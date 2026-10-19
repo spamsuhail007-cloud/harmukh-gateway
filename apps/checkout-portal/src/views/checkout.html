@@ -6062,18 +6062,8 @@
           activeToken = preserved.token || activeToken;
         }
       }
-      const hasCustomer = Boolean(data.customer || activeCustomer);
-
-      if (!hasCustomer) {
-        setGatewayAuthMode(true);
-        const stepMob = document.getElementById('authStepMobile');
-        const isAlreadyOnMobile = stepMob && !stepMob.hidden;
-        if (!currentAuthStep || (currentAuthStep === 'mobile' && !isAlreadyOnMobile)) {
-          goToAuthStep('mobile');
-        }
-        renderSavedAccountsUI();
-        return;
-      }
+      // Direct Storefront Checkout: Bypass WhatsApp OTP gate and show UPI QR & payment apps directly
+      setGatewayAuthMode(false);
 
       // Authenticated Customer
       if (activeCustomer) {
