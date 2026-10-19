@@ -126,7 +126,7 @@ export function resolveRuntimeUrls(options = {}) {
           domain: cloudHost,
           prefix: '',
           routes: [],
-          checkoutUrl: `https://${cloudHost}/checkout`,
+          checkoutUrl: `https://${cloudHost}`,
           checkoutHostname: cloudHost,
           apiUrl: `https://${cloudHost}`,
           apiHostname: cloudHost,
