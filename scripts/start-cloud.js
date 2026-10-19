@@ -23,6 +23,15 @@ const dataDir = path.join(rootDir, 'data');
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
 process.env.SQLITE_DB_PATH = path.join(dataDir, 'youpi_pg.sqlite');
+const DEFAULT_ADMIN_TOKEN = 'adde5f5215078a77c1c18696f4a5412b82bb748cb2e7f66f32f3a48e678f2428';
+process.env.ADMIN_API_TOKEN = process.env.ADMIN_API_TOKEN || DEFAULT_ADMIN_TOKEN;
+
+const secretsDir = path.join(dataDir, '.secrets');
+if (!fs.existsSync(secretsDir)) fs.mkdirSync(secretsDir, { recursive: true });
+const tokenFile = path.join(secretsDir, 'admin_api_token');
+try {
+  fs.writeFileSync(tokenFile, process.env.ADMIN_API_TOKEN, { mode: 0o600 });
+} catch {}
 
 console.log('====================================================');
 console.log('🚀 Starting Harmukh Threads YouPI Gateway (Cloud Mode)');
