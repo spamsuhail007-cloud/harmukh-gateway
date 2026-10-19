@@ -63,32 +63,23 @@ try {
   `, ['Harmukh Threads', 'harmukh-threads', 'orders@harmukhthreads.com']);
   console.log('[✓] Receiving account verified: 9796381311@axl (Pure UPI, Zero COD)');
 
-  const existingDevice = db.queryOne(`SELECT id FROM android_devices WHERE id = '321aa79a-7080-4dca-96cb-0d43378785f5'`);
-  if (!existingDevice) {
-    db.execute(`
-      INSERT INTO android_devices (
-        id, merchant_id, device_name, device_model, is_active,
-        last_heartbeat_at, last_observation_at, created_at, updated_at
-      ) VALUES (
-        '321aa79a-7080-4dca-96cb-0d43378785f5',
-        '00000000-0000-0000-0000-000000000001',
-        'Xiaomi M2101K7AI',
-        'M2101K7AI',
-        1,
-        datetime('now'),
-        datetime('now'),
-        datetime('now'),
-        datetime('now')
-      )
-    `);
-    console.log('[✓] Enrolled Android device: Xiaomi M2101K7AI');
-  } else {
-    db.execute(`
-      UPDATE android_devices
-      SET is_active = 1, last_heartbeat_at = datetime('now')
-      WHERE id = '321aa79a-7080-4dca-96cb-0d43378785f5'
-    `);
-  }
+  db.execute(`
+    INSERT OR REPLACE INTO android_devices (
+      id, merchant_id, device_name, device_model, signing_key_hash, is_active,
+      last_heartbeat_at, last_observation_at, created_at
+    ) VALUES (
+      '321aa79a-7080-4dca-96cb-0d43378785f5',
+      '00000000-0000-0000-0000-000000000001',
+      'Xiaomi M2101K7AI',
+      'M2101K7AI',
+      'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      1,
+      datetime('now'),
+      datetime('now'),
+      datetime('now')
+    )
+  `);
+  console.log('[✓] Enrolled Android device: Xiaomi M2101K7AI');
 } catch (e) {
   console.warn('[!] DB seed notice:', e.message);
 }
