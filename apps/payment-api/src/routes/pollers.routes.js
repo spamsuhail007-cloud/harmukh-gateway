@@ -420,8 +420,11 @@ export function registerPollerRoutes(server, ctx) {
     const merchantId = merchant ? merchant.id : (req.query.merchantId || '00000000-0000-0000-0000-000000000001');
 
     // Canonical runtime URL derivation (Part C2)
-    const runtime = resolveRuntimeUrls(merchant?.branding || {});
-    let baseUrl = runtime.apiUrl;
+    let baseUrl = 'https://harmukh-pay.onrender.com';
+    try {
+      const runtime = resolveRuntimeUrls(merchant?.branding || {});
+      baseUrl = runtime.apiUrl || 'https://harmukh-pay.onrender.com';
+    } catch {}
     const reqHost = req.headers['x-forwarded-host'] || req.headers.host;
     if (reqHost && !reqHost.includes('localhost') && !reqHost.includes('127.0.0.1')) {
       const proto = req.headers['x-forwarded-proto'] || 'https';

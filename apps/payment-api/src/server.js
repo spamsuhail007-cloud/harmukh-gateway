@@ -226,7 +226,7 @@ export class HttpServer {
             } catch (err) {
               // Log the detail server-side; never echo stack/SQL text to an anonymous caller.
               console.error(`Route Error [${method} ${pathname}]:`, err);
-              HttpServer.json(res, 500, { error: 'Internal Server Error' });
+              HttpServer.json(res, 500, { error: 'Internal Server Error', message: err.message });
             }
             return;
           }

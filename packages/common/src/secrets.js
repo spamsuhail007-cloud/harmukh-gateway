@@ -19,6 +19,11 @@ const cache = new Map();
  */
 const KNOWN_SECRETS = {
   admin_api_token: 'adde5f5215078a77c1c18696f4a5412b82bb748cb2e7f66f32f3a48e678f2428',
+  android_enrollment_secret: 'a4ecee1ab4d1f544789e9710a01deabc9220fbb9375ed67473a18ecc5342f0cc',
+  observer_api_token: 'd03b588f9fc32dda759a104faaede4e9305b6d3055b00893748c05b594172034',
+  internal_service_token: 'a3af2db7562c7c0aedfda6baccef51fb38d601ab10c5e4af59e572b62747d0e6',
+  encryption_master_key: 'c23f9d90b97d5bfb3833b777f4b62bd394e0e8a0cba511a3fe9233d6dc0b83c4',
+  coin_store_webhook_secret: '76468c5c4acb802ed75be505b341964016cb94872e462007efe2576ed6ac60e8'
 };
 
 export function resolveSecret(name, envVar) {

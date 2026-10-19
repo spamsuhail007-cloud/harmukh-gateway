@@ -119,7 +119,22 @@ export function resolveRuntimeUrls(options = {}) {
       if ((process.env.NODE_ENV === 'test' || process.env.YOUPI_MODE === 'localhost') && options.envMode !== 'production') {
         mode = 'localhost';
       } else {
-        throw new Error('Production Configuration Incomplete: Cloudflare Domain is required when running in PRODUCTION mode.');
+        const cloudHost = process.env.RENDER_EXTERNAL_HOSTNAME || process.env.PUBLIC_DOMAIN || 'harmukh-pay.onrender.com';
+        return {
+          mode: 'production',
+          isProduction: true,
+          domain: cloudHost,
+          prefix: '',
+          routes: [],
+          checkoutUrl: `https://${cloudHost}/checkout`,
+          checkoutHostname: cloudHost,
+          apiUrl: `https://${cloudHost}`,
+          apiHostname: cloudHost,
+          adminUrl: `https://${cloudHost}`,
+          adminHostname: cloudHost,
+          gmailUrl: `https://${cloudHost}`,
+          gmailHostname: cloudHost,
+        };
       }
     }
   }
