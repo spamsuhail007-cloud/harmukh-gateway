@@ -43,7 +43,7 @@ const db = getDatabase();
 ensureDatabaseInitialized(db);
 runMigrations(db);
 
-// Seed Harmukh Threads active VPA
+// Seed Harmukh Threads active VPA & settings
 try {
   db.execute(`
     UPDATE payment_receiving_accounts
@@ -53,10 +53,42 @@ try {
 
   db.execute(`
     UPDATE merchants 
-    SET business_name = ?, slug = ?, contact_email = ?
+    SET business_name = ?, slug = ?, contact_email = ?,
+        branding = json_set(
+          COALESCE(branding, '{}'),
+          '$.enabledPaymentMethods', json('["UPI"]'),
+          '$.sellingMode', 'ONLINE'
+        )
     WHERE id = '00000000-0000-0000-0000-000000000001'
   `, ['Harmukh Threads', 'harmukh-threads', 'orders@harmukhthreads.com']);
-  console.log('[✓] Receiving account verified: 9796381311@axl');
+  console.log('[✓] Receiving account verified: 9796381311@axl (Pure UPI, Zero COD)');
+
+  const existingDevice = db.queryOne(`SELECT id FROM android_devices WHERE id = '321aa79a-7080-4dca-96cb-0d43378785f5'`);
+  if (!existingDevice) {
+    db.execute(`
+      INSERT INTO android_devices (
+        id, merchant_id, device_name, device_model, is_active,
+        last_heartbeat_at, last_observation_at, created_at, updated_at
+      ) VALUES (
+        '321aa79a-7080-4dca-96cb-0d43378785f5',
+        '00000000-0000-0000-0000-000000000001',
+        'Xiaomi M2101K7AI',
+        'M2101K7AI',
+        1,
+        datetime('now'),
+        datetime('now'),
+        datetime('now'),
+        datetime('now')
+      )
+    `);
+    console.log('[✓] Enrolled Android device: Xiaomi M2101K7AI');
+  } else {
+    db.execute(`
+      UPDATE android_devices
+      SET is_active = 1, last_heartbeat_at = datetime('now')
+      WHERE id = '321aa79a-7080-4dca-96cb-0d43378785f5'
+    `);
+  }
 } catch (e) {
   console.warn('[!] DB seed notice:', e.message);
 }
@@ -120,8 +152,8 @@ const gateway = http.createServer((req, res) => {
     return;
   }
 
-  // Customer Checkout Modal & SDK
-  if (pathname.startsWith('/checkout') || pathname === '/youpi.js' || pathname.startsWith('/pay/')) {
+  // Customer Checkout Modal, SDK & Icons
+  if (pathname.startsWith('/checkout') || pathname === '/youpi.js' || pathname.startsWith('/pay/') || pathname.startsWith('/icons/')) {
     proxyRequest(req, res, CHECKOUT_PORT);
     return;
   }

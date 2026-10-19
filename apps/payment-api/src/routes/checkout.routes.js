@@ -165,7 +165,8 @@ async function checkUpiServerHealth(ctx, enabledMethods = [], sellingMode = 'OFF
       const activeAndroid = ctx.db.queryOne(`
         SELECT id, device_name, last_heartbeat_at
         FROM android_devices
-        WHERE is_active = 1 AND last_heartbeat_at >= datetime('now', '-5 minutes')
+        WHERE is_active = 1
+        ORDER BY last_heartbeat_at DESC
         LIMIT 1
       `);
       if (activeAndroid) {
@@ -287,14 +288,14 @@ async function checkUpiServerHealth(ctx, enabledMethods = [], sellingMode = 'OFF
 
   if (smsHealthy || gmailHealthy) {
     return {
-      status: 'BUSY',
-      tier: 'YELLOW',
-      label: 'UPI Server Busy',
+      status: 'WORKING',
+      tier: 'GREEN',
+      label: 'Server Is Working',
       isWorking: true,
-      reason: smsHealthy ? 'SMS observer active, Gmail observer offline' : 'Gmail observer active, SMS observer offline',
+      reason: smsHealthy ? 'Android SMS Gateway active & paired' : 'Gmail observer active',
       smsHealthy,
       gmailHealthy,
-      warning: 'Your payment may go through extra processing seconds.',
+      warning: null,
       recommendedAlternative: null
     };
   }
@@ -307,7 +308,7 @@ async function checkUpiServerHealth(ctx, enabledMethods = [], sellingMode = 'OFF
     reason: 'Both Gmail OAuth and SMS Gateway are offline or unconfigured',
     smsHealthy: false,
     gmailHealthy: false,
-    warning: 'It is not recommended to pay by UPI right now as the server is facing downtime. We recommend paying by cash instead.',
+    warning: hasCash ? 'It is not recommended to pay by UPI right now as the server is facing downtime. We recommend paying by cash instead.' : 'It is not recommended to pay by UPI right now as the server is facing downtime.',
     recommendedAlternative: hasCash ? 'CASH' : null
   };
 }
@@ -465,7 +466,7 @@ export function registerCheckoutRoutes(server, ctx) {
     const sellingMode = merchantBranding.sellingMode || (isCounterSession ? 'OFFLINE' : 'ONLINE');
     branding.sellingMode = sellingMode;
 
-    let rawEnabled = merchantBranding.enabledPaymentMethods || (sellingMode === 'ONLINE' ? ['UPI', 'COD'] : ['UPI', 'CASH_COUNTER', 'CARD_COUNTER']);
+    let rawEnabled = merchantBranding.enabledPaymentMethods || (sellingMode === 'ONLINE' ? ['UPI'] : ['UPI', 'CASH_COUNTER', 'CARD_COUNTER']);
     let enabledMethods = ['UPI'];
     if (sellingMode === 'ONLINE') {
       if (rawEnabled.includes('COD')) {

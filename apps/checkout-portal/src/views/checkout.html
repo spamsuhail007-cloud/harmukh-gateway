@@ -3047,7 +3047,7 @@
 <body>
 
   <!-- TOAST NOTIFICATION -->
-  <div id="ypgToast" class="ypg-toast"><img src="/icons/upi.svg" alt="UPI" style="height:12px; vertical-align:middle; filter:brightness(0) invert(1); margin-right:4px;" /> Direct UPI QR is active for instant banking verification</div>
+  <div id="ypgToast" class="ypg-toast"><img src="/icons/upi.svg" onerror="if(window.FALLBACK_ICONS&&window.FALLBACK_ICONS.upi)this.src=window.FALLBACK_ICONS.upi" alt="UPI" style="height:12px; vertical-align:middle; filter:brightness(0) invert(1); margin-right:4px;" /> Direct UPI QR is active for instant banking verification</div>
 
   <!-- YOUPI PG CHECKOUT CARD / DRAWER WRAPPER -->
   <div class="ypg-wrapper">
@@ -3377,7 +3377,7 @@
           <!-- DYNAMIC PAYMENT METHOD SELECTOR BAR (ONLINE / OFFLINE MODALITY TABS) -->
           <div id="paymentMethodSelectorBar" class="ypg-method-selector-bar" style="display:{{METHOD_SELECTOR_DISPLAY}};">
             <button type="button" class="ypg-method-tab active" id="tabMethodUpi" onclick="selectPaymentMethod('UPI')">
-              <img src="/icons/upi.svg" alt="UPI" class="ypg-tab-icon" style="height:15px;" />
+              <img src="/icons/upi.svg" onerror="if(window.FALLBACK_ICONS&&window.FALLBACK_ICONS.upi)this.src=window.FALLBACK_ICONS.upi" alt="UPI" class="ypg-tab-icon" style="height:15px;" />
               <span>UPI QR</span>
             </button>
             <button type="button" class="ypg-method-tab" id="tabMethodCod" onclick="selectPaymentMethod('COD')"
@@ -3404,7 +3404,7 @@
               <!-- UPI Card -->
               <div class="ypg-pc-method-card is-active" id="pcMethodCardUpi" onclick="selectPaymentMethod('UPI')">
                 <div class="ypg-pc-method-header">
-                  <img src="/icons/upi.svg" alt="UPI" style="height:15px; margin-right:6px; vertical-align:middle;" />
+                  <img src="/icons/upi.svg" onerror="if(window.FALLBACK_ICONS&&window.FALLBACK_ICONS.upi)this.src=window.FALLBACK_ICONS.upi" alt="UPI" style="height:15px; margin-right:6px; vertical-align:middle;" />
                   <div class="ypg-pc-method-title">UPI QR</div>
                 </div>
                 <div class="ypg-pc-method-sub">Scan &amp; Pay via UPI Apps</div>

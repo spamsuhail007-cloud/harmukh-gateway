@@ -116,26 +116,25 @@ export function resolveRuntimeUrls(options = {}) {
 
   if (mode === 'production') {
     if (!domain) {
-      if ((process.env.NODE_ENV === 'test' || process.env.YOUPI_MODE === 'localhost') && options.envMode !== 'production') {
-        mode = 'localhost';
-      } else {
-        const cloudHost = process.env.RENDER_EXTERNAL_HOSTNAME || process.env.PUBLIC_DOMAIN || 'harmukh-pay.onrender.com';
-        return {
-          mode: 'production',
-          isProduction: true,
-          domain: cloudHost,
-          prefix: '',
-          routes: [],
-          checkoutUrl: `https://${cloudHost}`,
-          checkoutHostname: cloudHost,
-          apiUrl: `https://${cloudHost}`,
-          apiHostname: cloudHost,
-          adminUrl: `https://${cloudHost}`,
-          adminHostname: cloudHost,
-          gmailUrl: `https://${cloudHost}`,
-          gmailHostname: cloudHost,
-        };
+      if (options.domain === '' || options.domain === null || (!process.env.RENDER && !process.env.RENDER_EXTERNAL_HOSTNAME)) {
+        throw new Error('Production Configuration Incomplete: CLOUDFLARE_DOMAIN or domain is required in production mode');
       }
+      const cloudHost = process.env.RENDER_EXTERNAL_HOSTNAME || process.env.PUBLIC_DOMAIN || 'harmukh-pay.onrender.com';
+      return {
+        mode: 'production',
+        isProduction: true,
+        domain: cloudHost,
+        prefix: '',
+        routes: [],
+        checkoutUrl: `https://${cloudHost}`,
+        checkoutHostname: cloudHost,
+        apiUrl: `https://${cloudHost}`,
+        apiHostname: cloudHost,
+        adminUrl: `https://${cloudHost}`,
+        adminHostname: cloudHost,
+        gmailUrl: `https://${cloudHost}`,
+        gmailHostname: cloudHost,
+      };
     }
   }
 

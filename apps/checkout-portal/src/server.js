@@ -175,6 +175,14 @@ export class CheckoutServer {
       .replaceAll('&', '\\u0026')
       .replaceAll('\u2028', '\\u2028')
       .replaceAll('\u2029', '\\u2029'));
+    let fallbackIconsJson = '{}';
+    try {
+      const dataUrisPath = path.join(__dirname, '..', 'public', 'icons', 'data-uris.json');
+      if (fs.existsSync(dataUrisPath)) {
+        fallbackIconsJson = fs.readFileSync(dataUrisPath, 'utf8');
+      }
+    } catch {}
+    html = html.replace('</head>', `<script>window.FALLBACK_ICONS = ${fallbackIconsJson};</script></head>`);
 
     return html;
   }
